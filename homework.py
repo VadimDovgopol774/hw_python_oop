@@ -14,12 +14,13 @@ class InfoMessage:
         self.calories = calories
 
     def get_message(self) -> str:
-        message: str = print(f'Тип тренировки: {self.trainig_type}; '
+        message: str = print(f'Тип тренировки: {self.training_type}; '
                              f'Длительность: {self.duration:.3f} ч.; '
                              f'Дистанция: {self.distance:.3f} км; '
                              f'Ср. скорость: {self.speed:.3f} км/ч; '
                              f'Потрачено ккал: {self.calories:.3f}.')
         return message
+
 
 class Training:
     """Базовый класс тренировки."""
