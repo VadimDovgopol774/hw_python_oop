@@ -39,11 +39,11 @@ class Training:
 
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
-        return (self.action * Training.LEN_STEP) / Training.M_IN_KM
+        return ((self.action * Training.LEN_STEP) / Training.M_IN_KM)
 
     def get_mean_speed(self) -> float:
         """Получить среднюю скорость движения."""
-        return self.get_distance() / self.duration
+        return (self.get_distance() / self.duration)
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
@@ -123,7 +123,7 @@ class Swimming(Training):
         self.training_type = 'Плавание'
 
     def get_distance(self) -> float:
-        return self.action * Swimming.LEN_STEP / Training.M_IN_KM
+        return (self.action * Swimming.LEN_STEP / Training.M_IN_KM)
 
     def get_mean_speed(self) -> float:
         return (self.length_pool * self.count_pool
@@ -157,4 +157,4 @@ if __name__ == '__main__':
 
     for workout_type, data in packages:
         training = read_package(workout_type, data)
-    main(training)
+        main(training)
