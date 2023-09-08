@@ -1,3 +1,7 @@
+from dataclasses import dataclass
+
+
+@dataclass
 class InfoMessage:
     """Информационное сообщение о тренировке."""
     def __init__(self,
@@ -36,7 +40,6 @@ class Training:
         self.action = action
         self.duration = duration
         self.weight = weight
-        self.training_type = ''
 
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
@@ -48,7 +51,7 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        pass
+        raise NotImplementedError()
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -74,11 +77,11 @@ class Running(Training):
         self.training_type = 'Бег'
 
     def get_spent_calories(self) -> float:
-        return ((Running.CALORIES_MEAN_SPEED_MULTIPLIER
+        return ((self.CALORIES_MEAN_SPEED_MULTIPLIER
                 * Training.get_mean_speed(self)
                 + Running.CALORIES_MEAN_SPEED_SHIFT)
-                * self.weight / Training.M_IN_KM
-                * self.duration * Training.MIN_IN_H)
+                * self.weight / self.M_IN_KM
+                * self.duration * self.MIN_IN_H)
 
 
 class SportsWalking(Training):
@@ -99,11 +102,11 @@ class SportsWalking(Training):
         self.training_type = 'Спортивная ходьба'
 
     def get_spent_calories(self) -> float:
-        return ((SportsWalking.COEFF_1 * self.weight
-                + ((Training.get_mean_speed(self) * SportsWalking.COEFF_3)**2
+        return ((self.COEFF_1 * self.weight
+                + ((Training.get_mean_speed(self) * self.COEFF_3)**2
                  / (self.height / SportsWalking.SM_IN_M))
-                * SportsWalking.COEFF_2 * self.weight)
-                * self.duration * Training.MIN_IN_H)
+                * self.COEFF_2 * self.weight)
+                * self.duration * self.MIN_IN_H)
 
 
 class Swimming(Training):
@@ -125,23 +128,26 @@ class Swimming(Training):
         self.training_type = 'Плавание'
 
     def get_distance(self) -> float:
-        return (self.action * Swimming.LEN_STEP / Training.M_IN_KM)
+        return (self.action * self.LEN_STEP / self.M_IN_KM)
 
     def get_mean_speed(self) -> float:
         return (self.length_pool * self.count_pool
-                / Training.M_IN_KM / self.duration)
+                / self.M_IN_KM / self.duration)
 
     def get_spent_calories(self) -> float:
-        return ((Swimming.get_mean_speed(self) + Swimming.SPEED_COEFF_1)
-                * Swimming.SPEED_COEFF_2 * self.weight * self.duration)
+        return ((Swimming.get_mean_speed(self) + self.SPEED_COEFF_1)
+                * self.SPEED_COEFF_2 * self.weight * self.duration)
 
 
-def read_package(workout_type: str, data: list) -> Training:
+def read_package(workout_type: str, data: list[str]) -> Training:
     """Прочитать данные полученные от датчиков."""
     pack_to_class = {'SWM': Swimming,
                      'WLK': SportsWalking,
                      'RUN': Running}
-    return pack_to_class[workout_type](*data)
+
+    if workout_type in pack_to_class:
+        return pack_to_class[workout_type](*data)
+    raise KeyError('Неожиданное значение')
 
 
 def main(training: Training) -> None:
