@@ -1,21 +1,15 @@
 from dataclasses import dataclass
+from typing import Dict, List, Type
 
 
 @dataclass
 class InfoMessage:
     """Информационное сообщение о тренировке."""
-    def __init__(self,
-                 training_type: str,
-                 duration: float,
-                 distance: float,
-                 speed: float,
-                 calories: float
-                 ) -> None:
-        self.training_type = training_type
-        self.duration = duration
-        self.distance = distance
-        self.speed = speed
-        self.calories = calories
+    training_type: str
+    duration: float
+    distance: float
+    speed: float
+    calories: float
 
     def get_message(self) -> str:
         message = (f'Тип тренировки: {self.training_type}; '
@@ -74,7 +68,6 @@ class Running(Training):
                  duration: float,
                  weight: float):
         super().__init__(action, duration, weight)
-        self.training_type = 'Бег'
 
     def get_spent_calories(self) -> float:
         return ((self.CALORIES_MEAN_SPEED_MULTIPLIER
@@ -99,7 +92,6 @@ class SportsWalking(Training):
                  ) -> None:
         super().__init__(action, duration, weight)
         self.height = height
-        self.training_type = 'Спортивная ходьба'
 
     def get_spent_calories(self) -> float:
         return ((self.COEFF_1 * self.weight
@@ -125,7 +117,6 @@ class Swimming(Training):
         super().__init__(action, duration, weight)
         self.length_pool = length_pool
         self.count_pool = count_pool
-        self.training_type = 'Плавание'
 
     def get_distance(self) -> float:
         return (self.action * self.LEN_STEP / self.M_IN_KM)
@@ -139,15 +130,15 @@ class Swimming(Training):
                 * self.SPEED_COEFF_2 * self.weight * self.duration)
 
 
-def read_package(workout_type: str, data: list[str]) -> Training:
+def read_package(workout_type: str, data: List[float]) -> Training:
     """Прочитать данные полученные от датчиков."""
-    pack_to_class = {'SWM': Swimming,
-                     'WLK': SportsWalking,
-                     'RUN': Running}
-
-    if workout_type in pack_to_class:
-        return pack_to_class[workout_type](*data)
-    raise KeyError('Неожиданное значение')
+    workouts: Dict[str, Type[Training]] = {'SWM': Swimming,
+                                           'RUN': Running,
+                                           'WLK': SportsWalking,
+                                           }
+    if workout_type not in workouts:
+        raise KeyError('Неожиданное значение')
+    return workouts[workout_type](*data)
 
 
 def main(training: Training) -> None:
